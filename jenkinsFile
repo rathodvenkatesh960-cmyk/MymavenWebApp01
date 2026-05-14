@@ -27,20 +27,22 @@ pipeline {
 
         stage('Archive') {
             steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                archiveArtifacts artifacts: 'target/*.war', fingerprint: true
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Tomcat') {
             steps {
-                sh 'ansible-playbook ansible/playbook.yml -i ansible/hosts.ini'
+                sh '''
+                sudo cp target/*.war /opt/tomcat/webapps/
+                '''
             }
         }
     }
 
     post {
         success {
-            echo 'Build Successful!'
+            echo 'Build Successful and Deployed to Tomcat!'
         }
 
         failure {
